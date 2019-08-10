@@ -1,11 +1,11 @@
 package com.canx.cebulax.cebulax.service;
 
-import com.canx.cebulax.cebulax.dto.UserCreateDTO;
+import com.canx.cebulax.cebulax.dto.FamilyCreateDTO;
 import com.canx.cebulax.cebulax.model.Family;
 
 public interface FamilyService {
 
-    Family createFamily(UserCreateDTO userCreateDTO);
+    Family createFamily(FamilyCreateDTO familyCreateDTO);
 
     Family findByName(String familyName);
 }

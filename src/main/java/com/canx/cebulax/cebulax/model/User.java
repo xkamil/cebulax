@@ -5,7 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
+import java.util.Set;
 
 @Entity
 public class User {
@@ -19,10 +20,9 @@ public class User {
     @JsonIgnore
     private String password;
 
-    private Boolean familyOwner;
 
-    @OneToOne
-    private Family family;
+    @OneToMany
+    private Set<Family> families;
 
     public User() {
     }
@@ -31,6 +31,9 @@ public class User {
         this.name = name;
         this.password = password;
     }
+
+
+
 
     public Long getId() {
         return id;
@@ -56,21 +59,14 @@ public class User {
         this.password = password;
     }
 
-    public Family getFamily() {
-        return family;
+    public Set<Family> getFamilies() {
+        return families;
     }
 
-    public void setFamily(Family family) {
-        this.family = family;
+    public void setFamilies(Set<Family> families) {
+        this.families = families;
     }
 
-    public Boolean getFamilyOwner() {
-        return familyOwner;
-    }
-
-    public void setFamilyOwner(Boolean familyOwner) {
-        this.familyOwner = familyOwner;
-    }
 
     @Override
     public String toString() {
@@ -78,8 +74,7 @@ public class User {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
-                ", familyOwner=" + familyOwner +
-                ", family=" + family +
+                ", families=" + families +
                 '}';
     }
 }

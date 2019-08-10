@@ -4,9 +4,7 @@ import com.canx.cebulax.cebulax.dto.UserAuthenticateDTO;
 import com.canx.cebulax.cebulax.dto.UserCreateDTO;
 import com.canx.cebulax.cebulax.exception.BadCredentialsException;
 import com.canx.cebulax.cebulax.exception.EntityAlreadyExistsException;
-import com.canx.cebulax.cebulax.exception.EntityNotFoundException;
 import com.canx.cebulax.cebulax.model.ApiToken;
-import com.canx.cebulax.cebulax.model.Family;
 import com.canx.cebulax.cebulax.model.User;
 import com.canx.cebulax.cebulax.repository.UserRepository;
 import com.canx.cebulax.cebulax.security.PasswordEncoder;
@@ -20,24 +18,18 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 class UserServiceTest {
 
     @Mock
     private UserRepository userRepository;
     @Mock
-    private FamilyService familyService;
-    @Mock
     private TokenService tokenService;
-
     private PasswordEncoder passwordEncoder;
-
     private UserService userService;
 
-    private static final String FAMILY_NAME = "wrobel";
-    private static final Family family = new Family(FAMILY_NAME);
-    private User user = new User("roman", "asdfasdfs");
+    private User user;
     private ApiToken token;
 
     @BeforeEach
@@ -46,79 +38,31 @@ class UserServiceTest {
         passwordEncoder = new PasswordEncoder();
         user = new User("roman", passwordEncoder.hashPassword("pass"));
         token = new ApiToken(user);
-        userService = new UserServiceImpl(userRepository, familyService, tokenService, passwordEncoder);
+        userService = new UserServiceImpl(userRepository, tokenService, passwordEncoder);
     }
 
     @Test
-    void testCreateUserAndFamilyNewUserNewFamilyCreatesUserAndFamily() {
+    void testCreateUserNewUser() {
         // given
         userRepositorySaveReturnsUser();
         userRepositoryFindByNameReturnsEmpty();
-        familyServiceCreateFamilyReturnsFamily();
 
-        UserCreateDTO userCreateDTO = new UserCreateDTO("roman", "pass", FAMILY_NAME, true);
+        UserCreateDTO userCreateDTO = new UserCreateDTO("roman", "pass");
 
         // when
         User user = userService.createUser(userCreateDTO);
 
         // then
         assertThat(user.getName()).isEqualTo(user.getName());
-
-        verify(familyService, times(1)).createFamily(any());
     }
 
     @Test
-    void testCreateUserAndFamilyNewUserExistingFamilyCreatesUser() {
-        // given
-        userRepositorySaveReturnsUser();
-        userRepositoryFindByNameReturnsEmpty();
-        familyServiceFindByNameReturnsFamily();
-
-        UserCreateDTO userCreateDTO = new UserCreateDTO("roman", "pass", FAMILY_NAME, false);
-
-        // when
-        User user = userService.createUser(userCreateDTO);
-
-        // then
-        assertThat(user.getName()).isEqualTo(user.getName());
-
-        verify(familyService, times(0)).createFamily(any());
-    }
-
-    @Test
-    void testCreateUserAndFamilyExistingUserExistingFamilyThrows() {
+    void testCreateUserExistingUser() {
         // given
         userRepositorySaveReturnsUser();
         userRepositoryFindByNameReturnsUser();
-        familyServiceFindByNameReturnsFamily();
 
-        UserCreateDTO userCreateDTO = new UserCreateDTO("roman", "pass", FAMILY_NAME, false);
-
-        // when + then
-        assertThrows(EntityAlreadyExistsException.class, () -> userService.createUser(userCreateDTO));
-    }
-
-    @Test
-    void testCreateUserAndFamilyNewUserNonExistingFamilyThrows() {
-        // given
-        userRepositorySaveReturnsUser();
-        userRepositoryFindByNameReturnsEmpty();
-        familyServiceFindByNameThrowsNotFound();
-
-        UserCreateDTO userCreateDTO = new UserCreateDTO("roman", "pass", FAMILY_NAME, false);
-
-        // when + then
-        assertThrows(EntityNotFoundException.class, () -> userService.createUser(userCreateDTO));
-    }
-
-    @Test
-    void testCreateUserAndFamilyNewUserExistingFamilyThrows() {
-        // given
-        userRepositorySaveReturnsUser();
-        userRepositoryFindByNameReturnsEmpty();
-        familyServiceCreateFamilyThrowsConflict();
-
-        UserCreateDTO userCreateDTO = new UserCreateDTO("roman", "pass", FAMILY_NAME, true);
+        UserCreateDTO userCreateDTO = new UserCreateDTO("roman", "pass");
 
         // when + then
         assertThrows(EntityAlreadyExistsException.class, () -> userService.createUser(userCreateDTO));
@@ -161,22 +105,6 @@ class UserServiceTest {
 
     private void userRepositoryFindByNameReturnsEmpty() {
         when(userRepository.findByName(any())).thenReturn(Optional.empty());
-    }
-
-    private void familyServiceCreateFamilyReturnsFamily() {
-        when(familyService.createFamily(any())).thenReturn(family);
-    }
-
-    private void familyServiceCreateFamilyThrowsConflict() {
-        when(familyService.createFamily(any())).thenThrow(EntityAlreadyExistsException.class);
-    }
-
-    private void familyServiceFindByNameReturnsFamily() {
-        when(familyService.findByName(any())).thenReturn(family);
-    }
-
-    private void familyServiceFindByNameThrowsNotFound() {
-        when(familyService.findByName(any())).thenThrow(EntityNotFoundException.class);
     }
 
     private void tokenServiceCreateReturnsToken() {

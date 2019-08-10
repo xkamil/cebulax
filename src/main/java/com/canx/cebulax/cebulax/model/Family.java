@@ -1,12 +1,10 @@
 package com.canx.cebulax.cebulax.model;
 
-import com.canx.cebulax.cebulax.dto.UserCreateDTO;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import java.util.List;
+import javax.persistence.ManyToMany;
+import java.util.Set;
 
 @Entity
 public class Family {
@@ -15,19 +13,20 @@ public class Family {
     @GeneratedValue
     private Long id;
     private String name;
+    private String secret;
+    private User owner;
 
-    @OneToMany(mappedBy = "family")
-    private List<User> users;
-
-    public static Family fromDTO(UserCreateDTO userCreateDTO) {
-        return new Family(userCreateDTO.getFamilyName());
-    }
+    @ManyToMany
+    private Set<User> users;
 
     public Family() {
     }
 
-    public Family(String name) {
+    public Family(String name, String secret, User owner, Set<User> users) {
         this.name = name;
+        this.secret = secret;
+        this.owner = owner;
+        this.users = users;
     }
 
     public Long getId() {
@@ -46,11 +45,37 @@ public class Family {
         this.name = name;
     }
 
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
+
+    public Set<User> getUsers() {
+        return users;
+    }
+
+    public void setUsers(Set<User> users) {
+        this.users = users;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        this.owner = owner;
+    }
+
     @Override
     public String toString() {
         return "Family{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", secret='" + secret + '\'' +
+                ", owner=" + owner +
                 ", users=" + users +
                 '}';
     }
