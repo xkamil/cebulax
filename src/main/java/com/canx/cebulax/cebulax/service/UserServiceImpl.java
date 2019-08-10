@@ -8,7 +8,7 @@ import com.canx.cebulax.cebulax.model.ApiToken;
 import com.canx.cebulax.cebulax.model.Family;
 import com.canx.cebulax.cebulax.model.User;
 import com.canx.cebulax.cebulax.repository.UserRepository;
-import org.apache.commons.codec.digest.DigestUtils;
+import com.canx.cebulax.cebulax.security.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,11 +19,13 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final FamilyService familyService;
     private final TokenService tokenService;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, FamilyService familyService, TokenService tokenService) {
+    public UserServiceImpl(UserRepository userRepository, FamilyService familyService, TokenService tokenService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.familyService = familyService;
         this.tokenService = tokenService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -42,7 +44,7 @@ public class UserServiceImpl implements UserService {
 
         User user = new User();
         user.setName(userCreateDTO.getName());
-        user.setPassword(hashPassword(userCreateDTO.getPassword()));
+        user.setPassword(passwordEncoder.hashPassword(userCreateDTO.getPassword()));
         user.setFamily(family);
         user.setFamilyOwner(userCreateDTO.getCreateFamily());
 
@@ -52,17 +54,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public ApiToken authenticate(UserAuthenticateDTO userAuthenticateDTO) {
         Optional<User> user = userRepository.findByName(userAuthenticateDTO.getName());
-        user.orElseThrow(BadCredentialsException::new);
+        if (!user.isPresent() || !passwordEncoder.passwordsEquals(userAuthenticateDTO.getPassword(), user.get().getPassword())) {
+            throw new BadCredentialsException();
+        }
 
         return tokenService.create(user.get());
-    }
-
-    private String hashPassword(String password) {
-        return new String(DigestUtils.sha256(password));
-    }
-
-    private boolean passwordsEquals(String plain, String hashed) {
-        return hashPassword(plain).equals(hashed);
     }
 
 }

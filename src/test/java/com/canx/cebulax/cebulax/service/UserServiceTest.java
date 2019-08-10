@@ -1,11 +1,15 @@
 package com.canx.cebulax.cebulax.service;
 
+import com.canx.cebulax.cebulax.dto.UserAuthenticateDTO;
 import com.canx.cebulax.cebulax.dto.UserCreateDTO;
+import com.canx.cebulax.cebulax.exception.BadCredentialsException;
 import com.canx.cebulax.cebulax.exception.EntityAlreadyExistsException;
 import com.canx.cebulax.cebulax.exception.EntityNotFoundException;
+import com.canx.cebulax.cebulax.model.ApiToken;
 import com.canx.cebulax.cebulax.model.Family;
 import com.canx.cebulax.cebulax.model.User;
 import com.canx.cebulax.cebulax.repository.UserRepository;
+import com.canx.cebulax.cebulax.security.PasswordEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -26,16 +30,23 @@ class UserServiceTest {
     private FamilyService familyService;
     @Mock
     private TokenService tokenService;
+
+    private PasswordEncoder passwordEncoder;
+
     private UserService userService;
 
     private static final String FAMILY_NAME = "wrobel";
     private static final Family family = new Family(FAMILY_NAME);
-    private static final User user = new User("roman", "asdfasdfs");
+    private User user = new User("roman", "asdfasdfs");
+    private ApiToken token;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserServiceImpl(userRepository, familyService, tokenService);
+        passwordEncoder = new PasswordEncoder();
+        user = new User("roman", passwordEncoder.hashPassword("pass"));
+        token = new ApiToken(user);
+        userService = new UserServiceImpl(userRepository, familyService, tokenService, passwordEncoder);
     }
 
     @Test
@@ -113,6 +124,33 @@ class UserServiceTest {
         assertThrows(EntityAlreadyExistsException.class, () -> userService.createUser(userCreateDTO));
     }
 
+    @Test
+    void testAuthenticateValidCredentialsReturnsToken() {
+        // given
+        userRepositoryFindByNameReturnsUser();
+        tokenServiceCreateReturnsToken();
+
+        UserAuthenticateDTO userAuthenticateDTO = new UserAuthenticateDTO("roman", "pass");
+
+        // when
+        ApiToken apiToken = userService.authenticate(userAuthenticateDTO);
+
+        // then
+        assertThat(apiToken).isNotNull();
+    }
+
+    @Test
+    void testAuthenticateValidCredentialsReturnsError() {
+        // given
+        userRepositoryFindByNameReturnsUser();
+        tokenServiceCreateReturnsToken();
+
+        UserAuthenticateDTO userAuthenticateDTO = new UserAuthenticateDTO("roman", "pass1");
+
+        // when + then
+        assertThrows(BadCredentialsException.class, () -> userService.authenticate(userAuthenticateDTO));
+    }
+
     private void userRepositorySaveReturnsUser() {
         when(userRepository.save(any())).thenReturn(user);
     }
@@ -139,6 +177,10 @@ class UserServiceTest {
 
     private void familyServiceFindByNameThrowsNotFound() {
         when(familyService.findByName(any())).thenThrow(EntityNotFoundException.class);
+    }
+
+    private void tokenServiceCreateReturnsToken() {
+        when(tokenService.create(any())).thenReturn(token);
     }
 
 }
