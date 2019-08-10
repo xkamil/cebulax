@@ -22,7 +22,7 @@ public class User {
 
 
     @OneToMany
-    private Set<Family> families;
+    private Set<Group> families;
 
     public User() {
     }
@@ -59,11 +59,11 @@ public class User {
         this.password = password;
     }
 
-    public Set<Family> getFamilies() {
+    public Set<Group> getFamilies() {
         return families;
     }
 
-    public void setFamilies(Set<Family> families) {
+    public void setFamilies(Set<Group> families) {
         this.families = families;
     }
 

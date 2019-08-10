@@ -3,7 +3,7 @@ package com.canx.cebulax.cebulax.dto;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-public class FamilyCreateDTO {
+public class GroupCreateDTO {
 
     @NotEmpty
     private String name;
@@ -14,10 +14,10 @@ public class FamilyCreateDTO {
     @NotNull
     private Long createdBy;
 
-    public FamilyCreateDTO() {
+    public GroupCreateDTO() {
     }
 
-    public FamilyCreateDTO(@NotEmpty String name, @NotEmpty String secret, @NotNull Long createdBy) {
+    public GroupCreateDTO(@NotEmpty String name, @NotEmpty String secret, @NotNull Long createdBy) {
         this.name = name;
         this.secret = secret;
         this.createdBy = createdBy;

@@ -7,7 +7,7 @@ import javax.persistence.ManyToMany;
 import java.util.Set;
 
 @Entity
-public class Family {
+public class Group {
 
     @Id
     @GeneratedValue
@@ -19,10 +19,10 @@ public class Family {
     @ManyToMany
     private Set<User> users;
 
-    public Family() {
+    public Group() {
     }
 
-    public Family(String name, String secret, User owner, Set<User> users) {
+    public Group(String name, String secret, User owner, Set<User> users) {
         this.name = name;
         this.secret = secret;
         this.owner = owner;
@@ -71,7 +71,7 @@ public class Family {
 
     @Override
     public String toString() {
-        return "Family{" +
+        return "Group{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", secret='" + secret + '\'' +
