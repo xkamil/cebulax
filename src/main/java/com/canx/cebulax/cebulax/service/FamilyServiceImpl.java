@@ -1,7 +1,8 @@
 package com.canx.cebulax.cebulax.service;
 
-import com.canx.cebulax.cebulax.dto.FamilyDTO;
-import com.canx.cebulax.cebulax.exception.FamilyAlreadyExistsException;
+import com.canx.cebulax.cebulax.dto.UserCreateDTO;
+import com.canx.cebulax.cebulax.exception.EntityAlreadyExistsException;
+import com.canx.cebulax.cebulax.exception.EntityNotFoundException;
 import com.canx.cebulax.cebulax.model.Family;
 import com.canx.cebulax.cebulax.repository.FamilyRepository;
 import org.springframework.stereotype.Service;
@@ -16,11 +17,17 @@ public class FamilyServiceImpl implements FamilyService {
     }
 
     @Override
-    public long createFamily(FamilyDTO family) {
-        familyRepository.findByName(family.getName()).ifPresent(f -> {
-            throw new FamilyAlreadyExistsException(family.getName());
+    public Family createFamily(UserCreateDTO userCreateDTO) {
+        familyRepository.findByName(userCreateDTO.getFamilyName()).ifPresent(f -> {
+            throw new EntityAlreadyExistsException("Family", userCreateDTO.getName());
         });
 
-        return familyRepository.save(Family.fromDTO(family)).getId();
+        return familyRepository.save(Family.fromDTO(userCreateDTO));
+    }
+
+    @Override
+    public Family findByName(String familyName) {
+        return familyRepository.findByName(familyName).orElseThrow(() ->
+                new EntityNotFoundException("Family ", familyName));
     }
 }

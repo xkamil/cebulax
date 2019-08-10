@@ -1,33 +1,15 @@
 package com.canx.cebulax.cebulax;
 
-import com.canx.cebulax.cebulax.dto.UserDTO;
-import com.canx.cebulax.cebulax.service.UserService;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
-public class CebulaxApplication implements CommandLineRunner {
+@EnableSwagger2
+public class CebulaxApplication {
 
-	private final UserService userService;
+    public static void main(String[] args) {
+        SpringApplication.run(CebulaxApplication.class, args);
+    }
 
-	public CebulaxApplication(UserService userService) {
-		this.userService = userService;
-	}
-
-	public static void main(String[] args) {
-		SpringApplication.run(CebulaxApplication.class, args);
-	}
-
-	@Override
-	public void run(String... args) throws Exception {
-		UserDTO userDTO = new UserDTO();
-		userDTO.setName("kamil");
-		userDTO.setName("roman");
-
-		long id = userService.createUser(userDTO);
-
-		System.out.println(id);
-
-	}
 }

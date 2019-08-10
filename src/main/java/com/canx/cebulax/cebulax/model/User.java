@@ -1,10 +1,12 @@
 package com.canx.cebulax.cebulax.model;
 
-import com.canx.cebulax.cebulax.dto.UserDTO;
+import com.canx.cebulax.cebulax.dto.UserCreateDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 @Entity
 public class User {
@@ -13,23 +15,21 @@ public class User {
     @GeneratedValue
     private Long id;
     private String name;
+    @JsonIgnore
     private String password;
+    private Boolean familyOwner;
 
+    @OneToOne
+    private Family family;
 
-    public static User fromDTO(UserDTO userDTO) {
-        return new User(userDTO.getName(), userDTO.getPassword());
+    public static User fromDTO(UserCreateDTO userCreateDTO) {
+        return new User(userCreateDTO.getName(), userCreateDTO.getPassword());
     }
 
     public User() {
     }
 
     public User(String name, String password) {
-        this.name = name;
-        this.password = password;
-    }
-
-    public User(Long id, String name, String password) {
-        this.id = id;
         this.name = name;
         this.password = password;
     }
@@ -56,5 +56,32 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Family getFamily() {
+        return family;
+    }
+
+    public void setFamily(Family family) {
+        this.family = family;
+    }
+
+    public Boolean getFamilyOwner() {
+        return familyOwner;
+    }
+
+    public void setFamilyOwner(Boolean familyOwner) {
+        this.familyOwner = familyOwner;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", familyOwner=" + familyOwner +
+                ", family=" + family +
+                '}';
     }
 }

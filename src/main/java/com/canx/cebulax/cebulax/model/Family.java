@@ -1,10 +1,12 @@
 package com.canx.cebulax.cebulax.model;
 
-import com.canx.cebulax.cebulax.dto.FamilyDTO;
+import com.canx.cebulax.cebulax.dto.UserCreateDTO;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import java.util.List;
 
 @Entity
 public class Family {
@@ -14,19 +16,17 @@ public class Family {
     private Long id;
     private String name;
 
-    public static Family fromDTO(FamilyDTO familyDTO) {
-        return new Family(familyDTO.getName());
+    @OneToMany(mappedBy = "family")
+    private List<User> users;
+
+    public static Family fromDTO(UserCreateDTO userCreateDTO) {
+        return new Family(userCreateDTO.getFamilyName());
     }
 
     public Family() {
     }
 
     public Family(String name) {
-        this.name = name;
-    }
-
-    public Family(Long id, String name) {
-        this.id = id;
         this.name = name;
     }
 
@@ -44,5 +44,14 @@ public class Family {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return "Family{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", users=" + users +
+                '}';
     }
 }

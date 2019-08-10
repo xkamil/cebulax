@@ -1,7 +1,8 @@
 package com.canx.cebulax.cebulax.service;
 
-import com.canx.cebulax.cebulax.dto.UserDTO;
-import com.canx.cebulax.cebulax.exception.UserAlreadyExistsException;
+import com.canx.cebulax.cebulax.dto.UserCreateDTO;
+import com.canx.cebulax.cebulax.exception.EntityAlreadyExistsException;
+import com.canx.cebulax.cebulax.model.Family;
 import com.canx.cebulax.cebulax.model.User;
 import com.canx.cebulax.cebulax.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -10,18 +11,32 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final FamilyService familyService;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, FamilyService familyService) {
         this.userRepository = userRepository;
+
+        this.familyService = familyService;
     }
 
-    public long createUser(UserDTO userDTO) {
-        userRepository.findByName(userDTO.getName()).ifPresent(user -> {
-            throw new UserAlreadyExistsException(userDTO.getName());
+    @Override
+    public User createUser(UserCreateDTO userCreateDTO) {
+        Family family;
+
+        if (userCreateDTO.getCreateFamily()) {
+            family = familyService.createFamily(userCreateDTO);
+        } else {
+            family = familyService.findByName(userCreateDTO.getFamilyName());
+        }
+
+        userRepository.findByName(userCreateDTO.getName()).ifPresent(user -> {
+            throw new EntityAlreadyExistsException("User ", userCreateDTO.getName());
         });
 
-        User user = User.fromDTO(userDTO);
-        return userRepository.save(user).getId();
+        User user = User.fromDTO(userCreateDTO);
+        user.setFamily(family);
+        user.setFamilyOwner(userCreateDTO.getCreateFamily());
+        return userRepository.save(user);
     }
 
 }

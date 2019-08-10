@@ -1,9 +1,20 @@
 package com.canx.cebulax.cebulax.dto;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 public class UserCreateDTO {
+
+    @NotEmpty
     private String name;
+
+    @NotEmpty
     private String password;
+
+    @NotEmpty
     private String familyName;
+
+    @NotNull
     private Boolean createFamily;
 
     public UserCreateDTO() {
