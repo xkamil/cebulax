@@ -2,17 +2,14 @@ package com.canx.cebulax.cebulax.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Set;
 
 @Entity
 public class User {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -20,9 +17,8 @@ public class User {
     @JsonIgnore
     private String password;
 
-
-    @OneToMany
-    private Set<Group> families;
+    @ManyToMany(mappedBy = "users")
+    private Set<Group> groups;
 
     public User() {
     }
@@ -59,12 +55,12 @@ public class User {
         this.password = password;
     }
 
-    public Set<Group> getFamilies() {
-        return families;
+    public Set<Group> getGroups() {
+        return groups;
     }
 
-    public void setFamilies(Set<Group> families) {
-        this.families = families;
+    public void setGroups(Set<Group> groups) {
+        this.groups = groups;
     }
 
 
@@ -74,7 +70,7 @@ public class User {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
-                ", families=" + families +
+                ", families=" + groups +
                 '}';
     }
 }

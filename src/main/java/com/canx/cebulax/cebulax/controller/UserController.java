@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
 public class UserController {
 
     private final UserService userService;
@@ -21,13 +20,13 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/users")
+    @PostMapping("/api/public/users")
     @ResponseStatus(HttpStatus.CREATED)
     ResponseBodyWrapper<User> createUser(@Valid @RequestBody UserCreateDTO user) {
         return ResponseBodyWrapper.from(userService.createUser(user));
     }
 
-    @PostMapping("/users/authenticate")
+    @PostMapping("/api/public/users/authenticate")
     @ResponseStatus(HttpStatus.OK)
     ResponseBodyWrapper<ApiToken> authenticate(@Valid @RequestBody UserAuthenticateDTO user) {
         return ResponseBodyWrapper.from(userService.authenticate(user));
