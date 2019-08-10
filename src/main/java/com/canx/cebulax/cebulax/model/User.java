@@ -1,6 +1,5 @@
 package com.canx.cebulax.cebulax.model;
 
-import com.canx.cebulax.cebulax.dto.UserCreateDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.Entity;
@@ -14,17 +13,16 @@ public class User {
     @Id
     @GeneratedValue
     private Long id;
+
     private String name;
+
     @JsonIgnore
     private String password;
+
     private Boolean familyOwner;
 
     @OneToOne
     private Family family;
-
-    public static User fromDTO(UserCreateDTO userCreateDTO) {
-        return new User(userCreateDTO.getName(), userCreateDTO.getPassword());
-    }
 
     public User() {
     }

@@ -24,6 +24,8 @@ class UserServiceTest {
     private UserRepository userRepository;
     @Mock
     private FamilyService familyService;
+    @Mock
+    private TokenService tokenService;
     private UserService userService;
 
     private static final String FAMILY_NAME = "wrobel";
@@ -33,7 +35,7 @@ class UserServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        userService = new UserServiceImpl(userRepository, familyService);
+        userService = new UserServiceImpl(userRepository, familyService, tokenService);
     }
 
     @Test

@@ -1,7 +1,9 @@
 package com.canx.cebulax.cebulax.controller;
 
 import com.canx.cebulax.cebulax.controller.body.ResponseBodyWrapper;
+import com.canx.cebulax.cebulax.dto.UserAuthenticateDTO;
 import com.canx.cebulax.cebulax.dto.UserCreateDTO;
+import com.canx.cebulax.cebulax.model.ApiToken;
 import com.canx.cebulax.cebulax.model.User;
 import com.canx.cebulax.cebulax.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -24,4 +26,12 @@ public class UserController {
     ResponseBodyWrapper<User> createUser(@Valid @RequestBody UserCreateDTO user) {
         return ResponseBodyWrapper.from(userService.createUser(user));
     }
+
+    @PostMapping("/users/authenticate")
+    @ResponseStatus(HttpStatus.OK)
+    ResponseBodyWrapper<ApiToken> authenticate(@Valid @RequestBody UserAuthenticateDTO user) {
+        return ResponseBodyWrapper.from(userService.authenticate(user));
+    }
+
+
 }
