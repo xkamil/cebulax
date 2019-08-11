@@ -26,4 +26,12 @@ public class UserController {
     }
 
 
+    //TODO remove
+    @GetMapping("")
+    @ResponseStatus(HttpStatus.OK)
+    String getUsers() {
+        return "dupa";
+    }
+
+
 }

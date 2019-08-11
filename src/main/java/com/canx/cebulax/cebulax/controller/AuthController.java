@@ -19,9 +19,9 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping("/api/auth")
+    @PostMapping("/auth")
     @ResponseStatus(HttpStatus.OK)
-    ResponseBodyWrapper<ApiToken> authenticate(@Valid @RequestBody UserAuthenticateDTO user) {
+    ResponseBodyWrapper<?> authenticate(@Valid @RequestBody UserAuthenticateDTO user) {
         return ResponseBodyWrapper.from(userService.authenticate(user));
     }
 

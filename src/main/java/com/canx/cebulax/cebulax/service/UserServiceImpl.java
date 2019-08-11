@@ -2,15 +2,17 @@ package com.canx.cebulax.cebulax.service;
 
 import com.canx.cebulax.cebulax.dto.UserAuthenticateDTO;
 import com.canx.cebulax.cebulax.dto.UserCreateDTO;
-import com.canx.cebulax.cebulax.exception.BadCredentialsException;
 import com.canx.cebulax.cebulax.exception.EntityAlreadyExistsException;
-import com.canx.cebulax.cebulax.model.ApiToken;
+import com.canx.cebulax.cebulax.model.JwtAuthenticationResponse;
 import com.canx.cebulax.cebulax.model.User;
 import com.canx.cebulax.cebulax.repository.UserRepository;
+import com.canx.cebulax.cebulax.security.JwtTokenProvider;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -18,11 +20,15 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider tokenProvider;
 
-    public UserServiceImpl(UserRepository userRepository, TokenService tokenService, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, TokenService tokenService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider) {
         this.userRepository = userRepository;
         this.tokenService = tokenService;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
@@ -38,13 +44,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiToken authenticate(UserAuthenticateDTO userAuthenticateDTO) {
-        Optional<User> user = userRepository.findByName(userAuthenticateDTO.getName());
-        if (!user.isPresent() || !passwordEncoder.matches(userAuthenticateDTO.getPassword(), user.get().getPassword())) {
-            throw new BadCredentialsException();
-        }
+    public JwtAuthenticationResponse authenticate(UserAuthenticateDTO userAuthenticateDTO) {
 
-        return tokenService.create(user.get());
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        userAuthenticateDTO.getName(),
+                        userAuthenticateDTO.getPassword()
+                )
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = tokenProvider.generateToken(authentication);
+
+        return new JwtAuthenticationResponse(jwt);
     }
 
 }
