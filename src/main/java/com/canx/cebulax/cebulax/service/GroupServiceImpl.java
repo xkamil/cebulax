@@ -7,7 +7,8 @@ import com.canx.cebulax.cebulax.model.Group;
 import com.canx.cebulax.cebulax.model.User;
 import com.canx.cebulax.cebulax.repository.GroupRepository;
 import com.canx.cebulax.cebulax.repository.UserRepository;
-import com.canx.cebulax.cebulax.security.PasswordEncoder;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -38,7 +39,7 @@ public class GroupServiceImpl implements GroupService {
         Set<User> users = new HashSet<>();
         users.add(user);
 
-        String hashedSecret = passwordEncoder.hashPassword(groupCreateDTO.getSecret());
+        String hashedSecret = passwordEncoder.encode(groupCreateDTO.getSecret());
         Group group = new Group(groupCreateDTO.getName(), hashedSecret, user, users);
         return groupRepository.save(group);
     }

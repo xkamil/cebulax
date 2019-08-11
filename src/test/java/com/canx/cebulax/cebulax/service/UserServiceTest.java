@@ -7,11 +7,12 @@ import com.canx.cebulax.cebulax.exception.EntityAlreadyExistsException;
 import com.canx.cebulax.cebulax.model.ApiToken;
 import com.canx.cebulax.cebulax.model.User;
 import com.canx.cebulax.cebulax.repository.UserRepository;
-import com.canx.cebulax.cebulax.security.PasswordEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -35,8 +36,8 @@ class UserServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        passwordEncoder = new PasswordEncoder();
-        user = new User("roman", passwordEncoder.hashPassword("pass"));
+        passwordEncoder = new BCryptPasswordEncoder();
+        user = new User("roman", passwordEncoder.encode("pass"));
         token = new ApiToken(user);
         userService = new UserServiceImpl(userRepository, tokenService, passwordEncoder);
     }

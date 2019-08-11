@@ -7,11 +7,12 @@ import com.canx.cebulax.cebulax.model.Group;
 import com.canx.cebulax.cebulax.model.User;
 import com.canx.cebulax.cebulax.repository.GroupRepository;
 import com.canx.cebulax.cebulax.repository.UserRepository;
-import com.canx.cebulax.cebulax.security.PasswordEncoder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -37,10 +38,10 @@ class GroupServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.initMocks(this);
-        passwordEncoder = new PasswordEncoder();
+        passwordEncoder = new BCryptPasswordEncoder();
         groupService = new GroupServiceImpl(groupRepository, userRepository, passwordEncoder);
-        user = new User("roman", passwordEncoder.hashPassword("pass"));
-        group = new Group("wrobel", passwordEncoder.hashPassword("passs"), user, new HashSet<User>() {{
+        user = new User("roman", passwordEncoder.encode("pass"));
+        group = new Group("wrobel", passwordEncoder.encode("passs"), user, new HashSet<User>() {{
             add(user);
         }});
     }
