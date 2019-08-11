@@ -36,17 +36,8 @@ public class TokenService {
         });
     }
 
-    public boolean isValid(UUID token) {
-        Optional<ApiToken> apiToken = tokenRepository.findByToken(token);
-
-        if (!apiToken.isPresent()) {
-            return false;
-        }
-
-        if (apiToken.get().getValidUntil().compareTo(LocalDateTime.now()) > 0) {
-            return false;
-        }
-        return true;
+    public Optional<ApiToken> getByToken(UUID token) {
+        return tokenRepository.findByToken(token);
     }
 
     private LocalDateTime createValidUntil() {

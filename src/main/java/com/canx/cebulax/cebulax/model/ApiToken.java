@@ -25,6 +25,10 @@ public class ApiToken {
         this.user = user;
     }
 
+    public boolean isValid() {
+        return validUntil.compareTo(LocalDateTime.now()) <= 0;
+    }
+
     public UUID getToken() {
         return token;
     }
