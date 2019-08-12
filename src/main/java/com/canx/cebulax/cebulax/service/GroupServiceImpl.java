@@ -4,6 +4,7 @@ import com.canx.cebulax.cebulax.dto.GroupCreateDTO;
 import com.canx.cebulax.cebulax.exception.BadCredentialsException;
 import com.canx.cebulax.cebulax.exception.EntityAlreadyExistsException;
 import com.canx.cebulax.cebulax.exception.EntityNotFoundException;
+import com.canx.cebulax.cebulax.exception.InvalidActionException;
 import com.canx.cebulax.cebulax.model.Group;
 import com.canx.cebulax.cebulax.model.User;
 import com.canx.cebulax.cebulax.repository.GroupRepository;
@@ -75,7 +76,7 @@ public class GroupServiceImpl implements GroupService {
                 () -> new EntityNotFoundException("User with id ", userId.toString()));
 
         Group group = groupRepository.findById(groupId).orElseThrow(
-                () -> new EntityNotFoundException("Group with id ", userId.toString()));
+                () -> new EntityNotFoundException("Group with id ", groupId.toString()));
 
         if (!passwordEncoder.matches(secret, group.getSecret())) {
             throw new BadCredentialsException();
@@ -83,5 +84,17 @@ public class GroupServiceImpl implements GroupService {
 
         group.getUsers().add(user);
         groupRepository.save(group);
+    }
+
+    @Override
+    public void deleteGroup(Long groupId, Long ownerId) {
+        Group group = groupRepository.findById(groupId).orElseThrow(
+                () -> new EntityNotFoundException("Group with id ", groupId.toString()));
+
+        if (!group.getOwner().getId().equals(ownerId)) {
+            throw new InvalidActionException("delete group", "only group owner can delete group");
+        }
+
+        groupRepository.delete(group);
     }
 }

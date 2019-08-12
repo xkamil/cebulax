@@ -16,4 +16,6 @@ public interface GroupService {
     void joinGroup(Long groupId, String secret, Long userId);
 
     void leaveGroup(Long groupId, Long userId);
+
+    void deleteGroup(Long groupId, Long ownerId);
 }

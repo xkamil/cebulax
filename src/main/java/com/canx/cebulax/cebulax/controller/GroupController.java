@@ -6,7 +6,6 @@ import com.canx.cebulax.cebulax.dto.GroupSecretDTO;
 import com.canx.cebulax.cebulax.security.CurrentUser;
 import com.canx.cebulax.cebulax.security.UserPrincipal;
 import com.canx.cebulax.cebulax.service.GroupService;
-import com.canx.cebulax.cebulax.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,12 +16,10 @@ import javax.validation.Valid;
 public class GroupController {
 
     private final GroupService groupService;
-    private final UserService userService;
     private final ResponseFactory responseFactory;
 
-    public GroupController(GroupService groupService, UserService userService, ResponseFactory responseFactory) {
+    public GroupController(GroupService groupService, ResponseFactory responseFactory) {
         this.groupService = groupService;
-        this.userService = userService;
         this.responseFactory = responseFactory;
     }
 
@@ -45,6 +42,12 @@ public class GroupController {
     @PatchMapping("/leave/{id}")
     ResponseEntity<?> joinGroup(@PathVariable("id") Long groupId, @CurrentUser UserPrincipal user) {
         groupService.leaveGroup(groupId, user.getId());
+        return responseFactory.ok();
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<?> deleteGroup(@PathVariable("id") Long groupId, @CurrentUser UserPrincipal user) {
+        groupService.deleteGroup(groupId, user.getId());
         return responseFactory.ok();
     }
 

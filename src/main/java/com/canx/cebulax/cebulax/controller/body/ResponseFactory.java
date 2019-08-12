@@ -3,6 +3,7 @@ package com.canx.cebulax.cebulax.controller.body;
 import com.canx.cebulax.cebulax.exception.BadCredentialsException;
 import com.canx.cebulax.cebulax.exception.EntityAlreadyExistsException;
 import com.canx.cebulax.cebulax.exception.EntityNotFoundException;
+import com.canx.cebulax.cebulax.exception.InvalidActionException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -27,15 +28,19 @@ public class ResponseFactory {
     }
 
     public ResponseEntity<?> error(EntityNotFoundException ex) {
-        return createError(ex, "not_found");
+        return createBadRequest(ex, "not_found");
     }
 
     public ResponseEntity<?> error(EntityAlreadyExistsException ex) {
-        return createError(ex, "conflict");
+        return createBadRequest(ex, "conflict");
+    }
+
+    public ResponseEntity<?> error(InvalidActionException ex) {
+        return createBadRequest(ex, "invalid_action");
     }
 
     public ResponseEntity<?> error(BadCredentialsException ex) {
-        return createError(ex, "bad_credentials");
+        return createBadRequest(ex, "bad_credentials");
     }
 
     public ResponseEntity<?> error(MethodArgumentNotValidException ex) {
@@ -53,7 +58,7 @@ public class ResponseFactory {
         return new ResponseEntity<>(body, status);
     }
 
-    private ResponseEntity<?> createError(RuntimeException ex, String error) {
+    private ResponseEntity<?> createBadRequest(RuntimeException ex, String error) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         ErrorBody errorBody = new ErrorBody(status.value(), ex.getMessage(), error);
         Object body = ErrorBodyWrapper.from(errorBody);
