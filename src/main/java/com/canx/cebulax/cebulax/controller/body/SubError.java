@@ -2,7 +2,7 @@ package com.canx.cebulax.cebulax.controller.body;
 
 import org.springframework.validation.FieldError;
 
-public class SubError {
+class SubError {
     private final String field;
     private final String message;
     private final String code;

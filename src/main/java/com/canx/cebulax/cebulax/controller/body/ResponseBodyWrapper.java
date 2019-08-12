@@ -1,6 +1,6 @@
 package com.canx.cebulax.cebulax.controller.body;
 
-public class ResponseBodyWrapper<T> {
+class ResponseBodyWrapper<T> {
     private final T data;
 
     public static <T> ResponseBodyWrapper<T> from(T data) {

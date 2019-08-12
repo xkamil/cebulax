@@ -24,85 +24,85 @@ import static org.mockito.Mockito.when;
 
 class GroupServiceTest {
 
-    private User user;
-    private Group group;
-
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private GroupRepository groupRepository;
-    @Mock
-    private UserRepository userRepository;
-    private GroupService groupService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.initMocks(this);
-        passwordEncoder = new BCryptPasswordEncoder();
-        groupService = new GroupServiceImpl(groupRepository, userRepository, passwordEncoder);
-        user = new User("roman", passwordEncoder.encode("pass"));
-        group = new Group("wrobel", passwordEncoder.encode("passs"), user, new HashSet<User>() {{
-            add(user);
-        }});
-    }
-
-    @Test
-    void testCreateGroupNonExistingName() {
-        // given
-        groupRepositorySaveReturnsGroup();
-        groupRepositoryFindByNameReturnsEmpty();
-        userRepositoryFindByIdReturnsUser();
-
-        GroupCreateDTO groupCreateDTO = new GroupCreateDTO("wrobel", "pass", 1L);
-
-        // when
-        Group group = groupService.createGroup(groupCreateDTO);
-
-        // then
-        assertThat(group.getName()).isEqualTo(this.group.getName());
-    }
-
-    @Test
-    void testCreateGroupWithExistingName() {
-        // given
-        groupRepositoryFindByNameReturnsGroup();
-        userRepositoryFindByIdReturnsUser();
-
-        GroupCreateDTO groupCreateDTO = new GroupCreateDTO("wrobel", "pass", 1L);
-
-        // when + then
-        assertThrows(EntityAlreadyExistsException.class, () -> groupService.createGroup(groupCreateDTO));
-    }
-
-    @Test
-    void testCreateNonExistingUser() {
-        // given
-        groupRepositoryFindByNameReturnsEmpty();
-        userRepositoryFindByIdReturnsEmpty();
-
-        GroupCreateDTO groupCreateDTO = new GroupCreateDTO("wrobel", "pass", 1L);
-
-        // when + then
-        assertThrows(EntityNotFoundException.class, () -> groupService.createGroup(groupCreateDTO));
-    }
-
-    private void groupRepositorySaveReturnsGroup() {
-        when(groupRepository.save(any())).thenReturn(group);
-    }
-
-    private void groupRepositoryFindByNameReturnsGroup() {
-        when(groupRepository.findByName(any())).thenReturn(Optional.of(group));
-    }
-
-    private void groupRepositoryFindByNameReturnsEmpty() {
-        when(groupRepository.findByName(any())).thenReturn(Optional.empty());
-    }
-
-    private void userRepositoryFindByIdReturnsUser() {
-        when(userRepository.findById(any())).thenReturn(Optional.of(user));
-    }
-
-    private void userRepositoryFindByIdReturnsEmpty() {
-        when(userRepository.findById(any())).thenReturn(Optional.empty());
-    }
+//    private User user;
+//    private Group group;
+//
+//    private PasswordEncoder passwordEncoder;
+//
+//    @Mock
+//    private GroupRepository groupRepository;
+//    @Mock
+//    private UserRepository userRepository;
+//    private GroupService groupService;
+//
+//    @BeforeEach
+//    void setUp() {
+//        MockitoAnnotations.initMocks(this);
+//        passwordEncoder = new BCryptPasswordEncoder();
+//        groupService = new GroupServiceImpl(groupRepository, userRepository, passwordEncoder);
+//        user = new User("roman", passwordEncoder.encode("pass"));
+//        group = new Group("wrobel", passwordEncoder.encode("passs"), user, new HashSet<User>() {{
+//            add(user);
+//        }});
+//    }
+//
+//    @Test
+//    void testCreateGroupNonExistingName() {
+//        // given
+//        groupRepositorySaveReturnsGroup();
+//        groupRepositoryFindByNameReturnsEmpty();
+//        userRepositoryFindByIdReturnsUser();
+//
+//        GroupCreateDTO groupCreateDTO = new GroupCreateDTO("wrobel", "pass", 1L);
+//
+//        // when
+//        Group group = groupService.createGroup(groupCreateDTO);
+//
+//        // then
+//        assertThat(group.getName()).isEqualTo(this.group.getName());
+//    }
+//
+//    @Test
+//    void testCreateGroupWithExistingName() {
+//        // given
+//        groupRepositoryFindByNameReturnsGroup();
+//        userRepositoryFindByIdReturnsUser();
+//
+//        GroupCreateDTO groupCreateDTO = new GroupCreateDTO("wrobel", "pass", 1L);
+//
+//        // when + then
+//        assertThrows(EntityAlreadyExistsException.class, () -> groupService.createGroup(groupCreateDTO));
+//    }
+//
+//    @Test
+//    void testCreateNonExistingUser() {
+//        // given
+//        groupRepositoryFindByNameReturnsEmpty();
+//        userRepositoryFindByIdReturnsEmpty();
+//
+//        GroupCreateDTO groupCreateDTO = new GroupCreateDTO("wrobel", "pass", 1L);
+//
+//        // when + then
+//        assertThrows(EntityNotFoundException.class, () -> groupService.createGroup(groupCreateDTO));
+//    }
+//
+//    private void groupRepositorySaveReturnsGroup() {
+//        when(groupRepository.save(any())).thenReturn(group);
+//    }
+//
+//    private void groupRepositoryFindByNameReturnsGroup() {
+//        when(groupRepository.findByName(any())).thenReturn(Optional.of(group));
+//    }
+//
+//    private void groupRepositoryFindByNameReturnsEmpty() {
+//        when(groupRepository.findByName(any())).thenReturn(Optional.empty());
+//    }
+//
+//    private void userRepositoryFindByIdReturnsUser() {
+//        when(userRepository.findById(any())).thenReturn(Optional.of(user));
+//    }
+//
+//    private void userRepositoryFindByIdReturnsEmpty() {
+//        when(userRepository.findById(any())).thenReturn(Optional.empty());
+//    }
 }

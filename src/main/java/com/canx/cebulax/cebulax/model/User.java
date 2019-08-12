@@ -3,6 +3,8 @@ package com.canx.cebulax.cebulax.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -18,7 +20,13 @@ public class User {
     private String password;
 
     @ManyToMany(mappedBy = "users")
+    @Transient
+    @JsonIgnore
     private Set<Group> groups;
+
+    @Transient
+    @JsonIgnore
+    private List<String> roles;
 
     public User() {
     }
@@ -28,8 +36,11 @@ public class User {
         this.password = password;
     }
 
-
-
+    public List<String> getRoles() {
+        List<String> roles = new ArrayList<>();
+        roles.add("USER");
+        return roles;
+    }
 
     public Long getId() {
         return id;

@@ -1,6 +1,6 @@
 package com.canx.cebulax.cebulax.controller.body;
 
-public class ErrorBodyWrapper<T> {
+class ErrorBodyWrapper<T> {
     private final T error;
 
     public static <T> ErrorBodyWrapper<T> from(T error) {

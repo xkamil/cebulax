@@ -1,11 +1,13 @@
 package com.canx.cebulax.cebulax.controller;
 
-import com.canx.cebulax.cebulax.controller.body.ResponseBodyWrapper;
+import com.canx.cebulax.cebulax.controller.body.ResponseFactory;
 import com.canx.cebulax.cebulax.dto.UserAuthenticateDTO;
-import com.canx.cebulax.cebulax.model.ApiToken;
 import com.canx.cebulax.cebulax.service.UserService;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 
@@ -14,15 +16,16 @@ import javax.validation.Valid;
 public class AuthController {
 
     private final UserService userService;
+    private final ResponseFactory responseFactory;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, ResponseFactory responseFactory) {
         this.userService = userService;
+        this.responseFactory = responseFactory;
     }
 
-    @PostMapping("/api/auth")
-    @ResponseStatus(HttpStatus.OK)
-    ResponseBodyWrapper<ApiToken> authenticate(@Valid @RequestBody UserAuthenticateDTO user) {
-        return ResponseBodyWrapper.from(userService.authenticate(user));
+    @PostMapping("/authenticate")
+    ResponseEntity<?> authenticate(@Valid @RequestBody UserAuthenticateDTO user) {
+        return responseFactory.ok(userService.authenticate(user));
     }
 
 

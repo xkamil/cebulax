@@ -1,7 +1,6 @@
 package com.canx.cebulax.cebulax.dto;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 public class GroupCreateDTO {
 
@@ -11,16 +10,12 @@ public class GroupCreateDTO {
     @NotEmpty
     private String secret;
 
-    @NotNull
-    private Long createdBy;
-
     public GroupCreateDTO() {
     }
 
-    public GroupCreateDTO(@NotEmpty String name, @NotEmpty String secret, @NotNull Long createdBy) {
+    public GroupCreateDTO(@NotEmpty String name, @NotEmpty String secret) {
         this.name = name;
         this.secret = secret;
-        this.createdBy = createdBy;
     }
 
     public String getName() {
@@ -39,11 +34,4 @@ public class GroupCreateDTO {
         this.secret = secret;
     }
 
-    public Long getCreatedBy() {
-        return createdBy;
-    }
-
-    public void setCreatedBy(Long createdBy) {
-        this.createdBy = createdBy;
-    }
 }
