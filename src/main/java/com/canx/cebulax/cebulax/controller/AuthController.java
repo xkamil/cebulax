@@ -2,6 +2,7 @@ package com.canx.cebulax.cebulax.controller;
 
 import com.canx.cebulax.cebulax.controller.body.ResponseFactory;
 import com.canx.cebulax.cebulax.dto.UserAuthenticateDTO;
+import com.canx.cebulax.cebulax.dto.UserCreateDTO;
 import com.canx.cebulax.cebulax.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,5 +29,9 @@ public class AuthController {
         return responseFactory.ok(userService.authenticate(user));
     }
 
+    @PostMapping("/register")
+    ResponseEntity<?> register(@Valid @RequestBody UserCreateDTO user) {
+        return responseFactory.created(userService.createUser(user));
+    }
 
 }

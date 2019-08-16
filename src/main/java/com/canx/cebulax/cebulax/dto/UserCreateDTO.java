@@ -1,7 +1,10 @@
 package com.canx.cebulax.cebulax.dto;
 
+import lombok.Data;
+
 import javax.validation.constraints.NotEmpty;
 
+@Data
 public class UserCreateDTO {
 
     @NotEmpty
@@ -9,29 +12,5 @@ public class UserCreateDTO {
 
     @NotEmpty
     private String password;
-
-    public UserCreateDTO() {
-    }
-
-    public UserCreateDTO(String name, String password) {
-        this.name = name;
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
 }

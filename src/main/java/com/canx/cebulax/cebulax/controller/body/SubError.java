@@ -1,7 +1,9 @@
 package com.canx.cebulax.cebulax.controller.body;
 
+import lombok.Getter;
 import org.springframework.validation.FieldError;
 
+@Getter
 class SubError {
     private final String field;
     private final String message;
@@ -15,17 +17,5 @@ class SubError {
         this.field = field;
         this.message = message;
         this.code = code;
-    }
-
-    public String getField() {
-        return field;
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    public String getCode() {
-        return code;
     }
 }

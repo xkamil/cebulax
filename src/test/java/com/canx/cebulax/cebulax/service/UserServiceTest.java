@@ -1,25 +1,8 @@
 package com.canx.cebulax.cebulax.service;
 
-import com.canx.cebulax.cebulax.dto.UserAuthenticateDTO;
-import com.canx.cebulax.cebulax.dto.UserCreateDTO;
-import com.canx.cebulax.cebulax.exception.BadCredentialsException;
-import com.canx.cebulax.cebulax.exception.EntityAlreadyExistsException;
-import com.canx.cebulax.cebulax.model.ApiToken;
-import com.canx.cebulax.cebulax.model.User;
-import com.canx.cebulax.cebulax.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 class UserServiceTest {
 
