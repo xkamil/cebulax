@@ -1,6 +1,7 @@
 package com.canx.cebulax.security;
 
 import com.canx.cebulax.model.User;
+import com.canx.cebulax.model.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -32,6 +33,7 @@ public class UserPrincipal implements UserDetails {
 
     public static UserPrincipal create(User user) {
         List<GrantedAuthority> authorities = user.getRoles().stream()
+                .map(UserRole::toString)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
 

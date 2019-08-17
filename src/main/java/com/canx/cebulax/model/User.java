@@ -5,9 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -28,18 +28,19 @@ public class User {
     @JsonIgnore
     private Set<Group> groups;
 
-    @Transient
-    @JsonIgnore
-    private List<String> roles = new ArrayList<String>() {{
-        add("USER");
-    }};
+    @ManyToMany
+    @JoinTable(
+            name = "user_group",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private List<Role> roles;
 
     public User(String name, String password) {
         this.name = name;
         this.password = password;
     }
 
-    public List<String> getRoles() {
-        return roles;
+    public List<UserRole> getRoles() {
+        return roles.stream().map(Role::getRole).collect(Collectors.toList());
     }
 }

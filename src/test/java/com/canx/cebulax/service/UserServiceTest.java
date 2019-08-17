@@ -6,6 +6,7 @@ import com.canx.cebulax.exception.EntityAlreadyExistsException;
 import com.canx.cebulax.exception.EntityNotFoundException;
 import com.canx.cebulax.model.JwtAuthenticationResponse;
 import com.canx.cebulax.model.User;
+import com.canx.cebulax.model.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +45,7 @@ class UserServiceTest {
         // then
         assertThat(createdUser.getId()).isNotNull();
         assertThat(createdUser.getName()).isEqualTo(userName);
-        assertThat(createdUser.getRoles()).contains("USER");
+        assertThat(createdUser.getRoles()).contains(UserRole.USER);
     }
 
     @Test

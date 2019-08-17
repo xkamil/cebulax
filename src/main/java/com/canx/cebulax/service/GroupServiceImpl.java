@@ -11,6 +11,7 @@ import com.canx.cebulax.repository.GroupRepository;
 import com.canx.cebulax.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -30,6 +31,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional
     public Group createGroup(GroupCreateDTO groupCreateDTO, Long userId) {
         groupRepository.findByName(groupCreateDTO.getName()).ifPresent(f -> {
             throw new EntityAlreadyExistsException("Group with name", groupCreateDTO.getName());
@@ -59,6 +61,7 @@ public class GroupServiceImpl implements GroupService {
 
 
     @Override
+    @Transactional
     public void leaveGroup(Long groupId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException("User with id ", userId.toString()));
@@ -71,6 +74,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional
     public void joinGroup(Long groupId, String secret, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException("User with id ", userId.toString()));
@@ -87,6 +91,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    @Transactional
     public void deleteGroup(Long groupId, Long ownerId) {
         Group group = groupRepository.findById(groupId).orElseThrow(
                 () -> new EntityNotFoundException("Group with id ", groupId.toString()));
