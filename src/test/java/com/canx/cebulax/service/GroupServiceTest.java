@@ -2,8 +2,10 @@ package com.canx.cebulax.service;
 
 import com.canx.cebulax.dto.GroupCreateDTO;
 import com.canx.cebulax.dto.UserCreateDTO;
+import com.canx.cebulax.exception.BadCredentialsException;
 import com.canx.cebulax.exception.EntityAlreadyExistsException;
 import com.canx.cebulax.exception.EntityNotFoundException;
+import com.canx.cebulax.exception.InvalidActionException;
 import com.canx.cebulax.model.Group;
 import com.canx.cebulax.model.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -33,7 +36,7 @@ class GroupServiceTest {
 
     @BeforeEach
     void setUpGroupServiceTest() {
-        groupName = UUID.randomUUID().toString().substring(0,10);
+        groupName = UUID.randomUUID().toString().substring(0, 10);
 
         if (user1 == null && user2 == null) {
             UserCreateDTO userInput1 = new UserCreateDTO(UUID.randomUUID().toString().substring(0, 10), "pass1");
@@ -80,7 +83,7 @@ class GroupServiceTest {
         Group foundGroup = sut.findByName(groupName);
 
         // then
-        assertThat(foundGroup.getId()).isEqualTo(createdGroup.getId());
+        assertThat(foundGroup).isEqualTo(createdGroup);
     }
 
     @Test
@@ -104,4 +107,58 @@ class GroupServiceTest {
         assertThat(updatedGroup.getUsers()).contains(user2);
     }
 
+    @Test
+    void testJoinGroupExistingGroupAndInvalidSecret() {
+        // given
+        GroupCreateDTO groupCreateDTO = new GroupCreateDTO(groupName, "gpass1");
+        Group group = sut.createGroup(groupCreateDTO, user1.getId());
+
+        // when + then
+        assertThrows(BadCredentialsException.class, () -> sut.joinGroup(group.getId(), "pass1", user2.getId()));
+    }
+
+    @Test
+    void testJoinGroupNonExistingGroup() {
+        // when + then
+        assertThrows(EntityNotFoundException.class, () -> sut.joinGroup(Long.MAX_VALUE, "pass1", user2.getId()));
+    }
+
+    @Test
+    void testLeaveGroupExistingGroupUserMember() {
+        // given
+        GroupCreateDTO groupCreateDTO = new GroupCreateDTO(groupName, "gpass1");
+        Group group = sut.createGroup(groupCreateDTO, user1.getId());
+
+        // when
+        sut.leaveGroup(group.getId(), user1.getId());
+
+        // then
+        Group updatedGroup = sut.findByName(group.getName());
+        assertThat(updatedGroup.getUsers()).hasSize(0);
+    }
+
+    @Test
+    void testDeleteGroupExistingGroupOwnerId() {
+        // given
+        GroupCreateDTO groupCreateDTO = new GroupCreateDTO(groupName, "gpass1");
+        Group group = sut.createGroup(groupCreateDTO, user1.getId());
+
+        // when
+        sut.deleteGroup(group.getId(), user1.getId());
+
+        // then
+        assertThrows(EntityNotFoundException.class, () -> sut.findByName(group.getName()));
+    }
+
+    @Test
+    void testDeleteGroupExistingGroupNotOwnerId() {
+        // given
+        GroupCreateDTO groupCreateDTO = new GroupCreateDTO(groupName, "gpass1");
+        Group group = sut.createGroup(groupCreateDTO, user1.getId());
+
+        // when + then
+        assertThrows(InvalidActionException.class, () -> sut.deleteGroup(group.getId(), user2.getId()));
+        Group existingGroup = sut.findByName(group.getName());
+        assertThat(existingGroup).isEqualTo(group);
+    }
 }
