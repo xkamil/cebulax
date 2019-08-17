@@ -31,7 +31,6 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    @Transactional
     public Group createGroup(GroupCreateDTO groupCreateDTO, Long userId) {
         groupRepository.findByName(groupCreateDTO.getName()).ifPresent(f -> {
             throw new EntityAlreadyExistsException("Group with name", groupCreateDTO.getName());
@@ -61,7 +60,6 @@ public class GroupServiceImpl implements GroupService {
 
 
     @Override
-    @Transactional
     public void leaveGroup(Long groupId, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException("User with id ", userId.toString()));
@@ -74,7 +72,6 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    @Transactional
     public void joinGroup(Long groupId, String secret, Long userId) {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException("User with id ", userId.toString()));
@@ -91,7 +88,6 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    @Transactional
     public void deleteGroup(Long groupId, Long ownerId) {
         Group group = groupRepository.findById(groupId).orElseThrow(
                 () -> new EntityNotFoundException("Group with id ", groupId.toString()));

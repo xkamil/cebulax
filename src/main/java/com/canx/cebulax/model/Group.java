@@ -22,10 +22,10 @@ public class Group {
     @JsonIgnore
     private String secret;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     private User owner;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_groups",
             joinColumns = @JoinColumn(name = "groups_id"),

@@ -68,7 +68,6 @@ class UserServiceTest {
         // when
         User user = sut.findById(createdUser.getId());
 
-
         // then
         assertThat(user).isEqualTo(createdUser);
     }
