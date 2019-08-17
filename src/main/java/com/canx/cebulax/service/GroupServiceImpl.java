@@ -9,11 +9,9 @@ import com.canx.cebulax.model.Group;
 import com.canx.cebulax.model.User;
 import com.canx.cebulax.repository.GroupRepository;
 import com.canx.cebulax.repository.UserRepository;
+import com.google.common.collect.Sets;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,11 +37,9 @@ public class GroupServiceImpl implements GroupService {
         User user = userRepository.findById(userId).orElseThrow(
                 () -> new EntityNotFoundException("User with id ", userId.toString()));
 
-        Set<User> users = new HashSet<>();
-        users.add(user);
-
+        Set<User> users = Sets.newHashSet(user);
         String hashedSecret = passwordEncoder.encode(groupCreateDTO.getSecret());
-        Group group = new Group(groupCreateDTO.getName(), hashedSecret, user, users);
+        Group group = new Group(groupCreateDTO.getName(), hashedSecret, user, users, Sets.newHashSet());
         return groupRepository.save(group);
     }
 

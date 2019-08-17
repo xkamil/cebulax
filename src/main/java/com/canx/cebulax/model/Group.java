@@ -32,10 +32,18 @@ public class Group {
             inverseJoinColumns = @JoinColumn(name = "user_id"))
     private Set<User> users;
 
-    public Group(String name, String secret, User owner, Set<User> users) {
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "resource_group",
+            joinColumns = @JoinColumn(name = "groups_id"),
+            inverseJoinColumns = @JoinColumn(name = "resource_id"))
+    private Set<Resource> resources;
+
+    public Group(String name, String secret, User owner, Set<User> users, Set<Resource> resources) {
         this.name = name;
         this.secret = secret;
         this.owner = owner;
         this.users = users;
+        this.resources = resources;
     }
 }
