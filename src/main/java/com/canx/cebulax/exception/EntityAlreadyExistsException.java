@@ -1,8 +1,11 @@
 package com.canx.cebulax.exception;
 
-public class EntityAlreadyExistsException extends RuntimeException {
+import org.springframework.http.HttpStatus;
 
-    public EntityAlreadyExistsException(String entity, String id) {
-        super(String.format("%s %s already exists.", entity, id));
+public class EntityAlreadyExistsException extends ServiceException {
+    private static final String ERROR = "conflict";
+
+    public EntityAlreadyExistsException(String entity) {
+        super(entity + " already exists.", HttpStatus.CONFLICT.value(), ERROR);
     }
 }

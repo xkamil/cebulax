@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(UserCreateDTO userCreateDTO) {
         userRepository.findByName(userCreateDTO.getName()).ifPresent(user -> {
-            throw new EntityAlreadyExistsException("User ", userCreateDTO.getName());
+            throw new EntityAlreadyExistsException("User with name" + userCreateDTO.getName());
         });
 
         List<Role> roles = roleRepository.findByRole(UserRole.USER);
@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException("User", id.toString()));
+                new EntityNotFoundException("User with id " + id.toString()));
     }
 
 }

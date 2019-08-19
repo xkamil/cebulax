@@ -1,6 +1,6 @@
 package com.canx.cebulax.controller.body;
 
-import com.canx.cebulax.exception.*;
+import com.canx.cebulax.exception.ServiceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -13,35 +13,22 @@ import java.util.stream.Collectors;
 public class ResponseFactory {
 
     public ResponseEntity<?> ok(Object body) {
-        return createOk(body, HttpStatus.OK);
+        return new ResponseEntity<>(ResponseBodyWrapper.from(body), HttpStatus.OK);
     }
 
     public ResponseEntity<?> ok() {
-        return createOk("", HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     public ResponseEntity<?> created(Object body) {
-        return createOk(body, HttpStatus.CREATED);
+        return new ResponseEntity<>(ResponseBodyWrapper.from(body), HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> error(EntityNotFoundException ex) {
-        return createBadRequest(ex, "not_found");
-    }
-
-    public ResponseEntity<?> error(EntityAlreadyExistsException ex) {
-        return createBadRequest(ex, "conflict");
-    }
-
-    public ResponseEntity<?> error(InvalidActionException ex) {
-        return createBadRequest(ex, "invalid_action");
-    }
-
-    public ResponseEntity<?> error(BadCredentialsException ex) {
-        return createBadRequest(ex, "bad_credentials");
-    }
-
-    public ResponseEntity<?> error(InvalidArgumentException ex) {
-        return createBadRequest(ex, "invalid_argument");
+    public ResponseEntity<?> error(ServiceException ex) {
+        HttpStatus status = HttpStatus.valueOf(ex.getCode());
+        ErrorBody errorBody = new ErrorBody(ex.getCode(), ex.getMessage(), ex.getError());
+        Object body = ResponseBodyWrapper.from(errorBody);
+        return new ResponseEntity<>(body, status);
     }
 
     public ResponseEntity<?> error(MethodArgumentNotValidException ex) {
@@ -54,20 +41,9 @@ public class ResponseFactory {
                 .collect(Collectors.toList());
 
         ErrorBody error = new ErrorBody(status.value(), "validation_error", "Validation errors", errors);
-        Object body = ErrorBodyWrapper.from(error);
+        Object body = ResponseBodyWrapper.from(error);
 
         return new ResponseEntity<>(body, status);
-    }
-
-    private ResponseEntity<?> createBadRequest(RuntimeException ex, String error) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        ErrorBody errorBody = new ErrorBody(status.value(), ex.getMessage(), error);
-        Object body = ErrorBodyWrapper.from(errorBody);
-        return new ResponseEntity<>(body, status);
-    }
-
-    private ResponseEntity<?> createOk(Object body, HttpStatus status) {
-        return new ResponseEntity<>(ResponseBodyWrapper.from(body), status);
     }
 
 }

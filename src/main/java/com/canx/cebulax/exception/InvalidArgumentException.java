@@ -1,8 +1,11 @@
 package com.canx.cebulax.exception;
 
-public class InvalidArgumentException extends RuntimeException {
+import org.springframework.http.HttpStatus;
 
-    public InvalidArgumentException(String argument, String reason) {
-        super(String.format("Invalid argument: %s - %s", argument, reason));
+public class InvalidArgumentException extends ServiceException {
+    private static final String ERROR = "invalid_argument";
+
+    public InvalidArgumentException(String message) {
+        super(message, HttpStatus.BAD_REQUEST.value(), ERROR);
     }
 }

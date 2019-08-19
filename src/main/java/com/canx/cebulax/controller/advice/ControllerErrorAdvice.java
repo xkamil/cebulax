@@ -21,28 +21,8 @@ public class ControllerErrorAdvice {
         return responseFactory.error(ex);
     }
 
-    @ExceptionHandler(value = {EntityAlreadyExistsException.class})
-    public ResponseEntity<?> handle(EntityAlreadyExistsException ex) {
-        return responseFactory.error(ex);
-    }
-
-    @ExceptionHandler(value = {EntityNotFoundException.class})
-    public ResponseEntity<?> handle(EntityNotFoundException ex) {
-        return responseFactory.error(ex);
-    }
-
-    @ExceptionHandler(value = {BadCredentialsException.class})
-    public ResponseEntity<?> handle(BadCredentialsException ex) {
-        return responseFactory.error(ex);
-    }
-
-    @ExceptionHandler(value = {InvalidArgumentException.class})
-    public ResponseEntity<?> handle(InvalidArgumentException ex) {
-        return responseFactory.error(ex);
-    }
-
-    @ExceptionHandler(value = {InvalidActionException.class})
-    public ResponseEntity<?> handle(InvalidActionException ex) {
+    @ExceptionHandler(value = {ServiceException.class})
+    public ResponseEntity<?> handle(ServiceException ex) {
         return responseFactory.error(ex);
     }
 

@@ -2,10 +2,7 @@ package com.canx.cebulax.service;
 
 import com.canx.cebulax.dto.GroupCreateDTO;
 import com.canx.cebulax.dto.UserCreateDTO;
-import com.canx.cebulax.exception.BadCredentialsException;
-import com.canx.cebulax.exception.EntityAlreadyExistsException;
-import com.canx.cebulax.exception.EntityNotFoundException;
-import com.canx.cebulax.exception.InvalidActionException;
+import com.canx.cebulax.exception.*;
 import com.canx.cebulax.model.Group;
 import com.canx.cebulax.model.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -114,7 +111,7 @@ class GroupServiceTest {
         Group group = sut.createGroup(groupCreateDTO, user1.getId());
 
         // when + then
-        assertThrows(BadCredentialsException.class, () -> sut.joinGroup(group.getId(), "pass1", user2.getId()));
+        assertThrows(UnauthorizedException.class, () -> sut.joinGroup(group.getId(), "pass1", user2.getId()));
     }
 
     @Test
@@ -157,7 +154,7 @@ class GroupServiceTest {
         Group group = sut.createGroup(groupCreateDTO, user1.getId());
 
         // when + then
-        assertThrows(InvalidActionException.class, () -> sut.deleteGroup(group.getId(), user2.getId()));
+        assertThrows(UnauthorizedException.class, () -> sut.deleteGroup(group.getId(), user2.getId()));
         Group existingGroup = sut.findByName(group.getName());
         assertThat(existingGroup).isEqualTo(group);
     }

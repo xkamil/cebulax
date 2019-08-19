@@ -30,8 +30,8 @@ class UserServiceTest {
     private String userName;
 
     @BeforeEach
-    void setUpUserServiceTest(){
-        userName = UUID.randomUUID().toString().substring(0,10);
+    void setUpUserServiceTest() {
+        userName = UUID.randomUUID().toString().substring(0, 10);
     }
 
     @Test

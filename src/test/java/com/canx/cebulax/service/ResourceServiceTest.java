@@ -4,9 +4,7 @@ import com.canx.cebulax.dto.GroupCreateDTO;
 import com.canx.cebulax.dto.ReservationCreateDTO;
 import com.canx.cebulax.dto.ResourceCreateDTO;
 import com.canx.cebulax.dto.UserCreateDTO;
-import com.canx.cebulax.exception.EntityAlreadyExistsException;
-import com.canx.cebulax.exception.InvalidActionException;
-import com.canx.cebulax.exception.InvalidArgumentException;
+import com.canx.cebulax.exception.*;
 import com.canx.cebulax.model.Group;
 import com.canx.cebulax.model.Reservation;
 import com.canx.cebulax.model.Resource;
@@ -125,7 +123,7 @@ class ResourceServiceTest {
         Resource resource = sut.createResource(resourceCreateDTO, group1.getId());
 
         // when + then
-        assertThrows(InvalidActionException.class, () -> sut.deleteResource(resource.getId(), user2.getId()));
+        assertThrows(UnauthorizedException.class, () -> sut.deleteResource(resource.getId(), user2.getId()));
         assertThat(sut.findAll().stream().anyMatch(r->r.getId().equals(resource.getId()))).isTrue();
     }
 
@@ -156,18 +154,6 @@ class ResourceServiceTest {
 
         // when + then
         assertThrows(InvalidArgumentException.class, () -> sut.addReservation(reservationCreateDTO, user3.getId()));
-    }
-
-    @Test
-    void testAddReservationDateInPast() {
-        // given
-        ResourceCreateDTO resourceCreateDTO = new ResourceCreateDTO(resourceName, 1);
-        Resource resource = sut.createResource(resourceCreateDTO, group1.getId());
-        LocalDateTime dateTo = LocalDateTime.now();
-        ReservationCreateDTO reservationCreateDTO = new ReservationCreateDTO(resource.getId(), dateTo);
-
-        // when + then
-        assertThrows(InvalidArgumentException.class, () -> sut.addReservation(reservationCreateDTO, user1.getId()));
     }
 
     @Test
