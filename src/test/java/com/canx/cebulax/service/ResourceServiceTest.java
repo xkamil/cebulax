@@ -9,6 +9,7 @@ import com.canx.cebulax.model.Group;
 import com.canx.cebulax.model.Reservation;
 import com.canx.cebulax.model.Resource;
 import com.canx.cebulax.model.User;
+import com.canx.cebulax.repository.ReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,6 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -166,7 +168,7 @@ class ResourceServiceTest {
         sut.addReservation(reservationCreateDTO, user1.getId());
 
         // when + then
-        assertThrows(InvalidArgumentException.class, () -> sut.addReservation(reservationCreateDTO, user1.getId()));
+        assertThrows(EntityAlreadyExistsException.class, () -> sut.addReservation(reservationCreateDTO, user1.getId()));
     }
 
 }

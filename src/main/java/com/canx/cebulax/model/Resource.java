@@ -1,6 +1,5 @@
 package com.canx.cebulax.model;
 
-import com.google.common.collect.Lists;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,15 +19,11 @@ public class Resource {
 
     private Integer slots;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     private Group group;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "resource_reservation",
-            joinColumns = @JoinColumn(name = "resource_id"),
-            inverseJoinColumns = @JoinColumn(name = "reservation_id"))
-    private List<Reservation> reservations = Lists.newArrayList();
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "resource")
+    private List<Reservation> reservations;
 
     public Resource(String name, Integer slots, Group group) {
         this.name = name;
