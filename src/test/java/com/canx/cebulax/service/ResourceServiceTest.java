@@ -1,11 +1,14 @@
 package com.canx.cebulax.service;
 
 import com.canx.cebulax.dto.GroupCreateDTO;
+import com.canx.cebulax.dto.ReservationCreateDTO;
 import com.canx.cebulax.dto.ResourceCreateDTO;
 import com.canx.cebulax.dto.UserCreateDTO;
 import com.canx.cebulax.exception.EntityAlreadyExistsException;
 import com.canx.cebulax.exception.InvalidActionException;
+import com.canx.cebulax.exception.InvalidArgumentException;
 import com.canx.cebulax.model.Group;
+import com.canx.cebulax.model.Reservation;
 import com.canx.cebulax.model.Resource;
 import com.canx.cebulax.model.User;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,6 +42,7 @@ class ResourceServiceTest {
     String resourceName;
     User user1;
     User user2;
+    User user3;
     Group group1;
     Group group2;
 
@@ -47,8 +53,10 @@ class ResourceServiceTest {
         if (!initialized) {
             UserCreateDTO userInput1 = new UserCreateDTO(UUID.randomUUID().toString().substring(0, 10), "pass1");
             UserCreateDTO userInput2 = new UserCreateDTO(UUID.randomUUID().toString().substring(0, 10), "pass1");
+            UserCreateDTO userInput3 = new UserCreateDTO(UUID.randomUUID().toString().substring(0, 10), "pass1");
             user1 = userService.createUser(userInput1);
             user2 = userService.createUser(userInput2);
+            user3 = userService.createUser(userInput3);
 
             GroupCreateDTO groupInput1 = new GroupCreateDTO(UUID.randomUUID().toString().substring(0, 10), "pass1");
             GroupCreateDTO groupInput2 = new GroupCreateDTO(UUID.randomUUID().toString().substring(0, 10), "pass1");
@@ -98,7 +106,7 @@ class ResourceServiceTest {
     }
 
     @Test
-    void testDeleteGroupExistingGroupGroupOwner() {
+    void testDeleteResourceAsGroupGroupOwner() {
         // given
         ResourceCreateDTO resourceCreateDTO = new ResourceCreateDTO(resourceName, 1);
         Resource resource = sut.createResource(resourceCreateDTO, group1.getId());
@@ -111,14 +119,68 @@ class ResourceServiceTest {
     }
 
     @Test
-    void testDeleteGroupExistingGroupNotGroupOwner() {
+    void testDeleteResourceAsNotGroupOwner() {
         // given
         ResourceCreateDTO resourceCreateDTO = new ResourceCreateDTO(resourceName, 1);
         Resource resource = sut.createResource(resourceCreateDTO, group1.getId());
 
         // when + then
         assertThrows(InvalidActionException.class, () -> sut.deleteResource(resource.getId(), user2.getId()));
-        assertThat(sut.findAll()).contains(resource);
+        assertThat(sut.findAll().stream().anyMatch(r->r.getId().equals(resource.getId()))).isTrue();
+    }
+
+    @Test
+    void testAddReservation() {
+        // given
+        ResourceCreateDTO resourceCreateDTO = new ResourceCreateDTO(resourceName, 1);
+        Resource resource = sut.createResource(resourceCreateDTO, group1.getId());
+        LocalDateTime dateTo = LocalDateTime.now().plus(10, ChronoUnit.MINUTES);
+        ReservationCreateDTO reservationCreateDTO = new ReservationCreateDTO(resource.getId(), dateTo);
+
+        // when
+        Reservation reservation = sut.addReservation(reservationCreateDTO, user1.getId());
+
+        // then
+        assertThat(reservation.getId()).isNotNull();
+        assertThat(reservation.getResource().getId()).isEqualTo(resource.getId());
+        assertThat(reservation.getUser()).isEqualTo(user1);
+    }
+
+    @Test
+    void testAddReservationUserNotInGroup() {
+        // given
+        ResourceCreateDTO resourceCreateDTO = new ResourceCreateDTO(resourceName, 1);
+        Resource resource = sut.createResource(resourceCreateDTO, group1.getId());
+        LocalDateTime dateTo = LocalDateTime.now().plus(10, ChronoUnit.MINUTES);
+        ReservationCreateDTO reservationCreateDTO = new ReservationCreateDTO(resource.getId(), dateTo);
+
+        // when + then
+        assertThrows(InvalidArgumentException.class, () -> sut.addReservation(reservationCreateDTO, user3.getId()));
+    }
+
+    @Test
+    void testAddReservationDateInPast() {
+        // given
+        ResourceCreateDTO resourceCreateDTO = new ResourceCreateDTO(resourceName, 1);
+        Resource resource = sut.createResource(resourceCreateDTO, group1.getId());
+        LocalDateTime dateTo = LocalDateTime.now();
+        ReservationCreateDTO reservationCreateDTO = new ReservationCreateDTO(resource.getId(), dateTo);
+
+        // when + then
+        assertThrows(InvalidArgumentException.class, () -> sut.addReservation(reservationCreateDTO, user1.getId()));
+    }
+
+    @Test
+    void testAddReservationUserWithExistingReservation() {
+        // given
+        ResourceCreateDTO resourceCreateDTO = new ResourceCreateDTO(resourceName, 1);
+        Resource resource = sut.createResource(resourceCreateDTO, group1.getId());
+        LocalDateTime dateTo = LocalDateTime.now().plus(10, ChronoUnit.MINUTES);
+        ReservationCreateDTO reservationCreateDTO = new ReservationCreateDTO(resource.getId(), dateTo);
+        sut.addReservation(reservationCreateDTO, user1.getId());
+
+        // when + then
+        assertThrows(InvalidArgumentException.class, () -> sut.addReservation(reservationCreateDTO, user1.getId()));
     }
 
 }

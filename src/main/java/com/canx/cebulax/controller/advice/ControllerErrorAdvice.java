@@ -1,9 +1,7 @@
 package com.canx.cebulax.controller.advice;
 
 import com.canx.cebulax.controller.body.ResponseFactory;
-import com.canx.cebulax.exception.BadCredentialsException;
-import com.canx.cebulax.exception.EntityAlreadyExistsException;
-import com.canx.cebulax.exception.EntityNotFoundException;
+import com.canx.cebulax.exception.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -35,6 +33,16 @@ public class ControllerErrorAdvice {
 
     @ExceptionHandler(value = {BadCredentialsException.class})
     public ResponseEntity<?> handle(BadCredentialsException ex) {
+        return responseFactory.error(ex);
+    }
+
+    @ExceptionHandler(value = {InvalidArgumentException.class})
+    public ResponseEntity<?> handle(InvalidArgumentException ex) {
+        return responseFactory.error(ex);
+    }
+
+    @ExceptionHandler(value = {InvalidActionException.class})
+    public ResponseEntity<?> handle(InvalidActionException ex) {
         return responseFactory.error(ex);
     }
 

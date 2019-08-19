@@ -1,9 +1,6 @@
 package com.canx.cebulax.controller.body;
 
-import com.canx.cebulax.exception.BadCredentialsException;
-import com.canx.cebulax.exception.EntityAlreadyExistsException;
-import com.canx.cebulax.exception.EntityNotFoundException;
-import com.canx.cebulax.exception.InvalidActionException;
+import com.canx.cebulax.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -41,6 +38,10 @@ public class ResponseFactory {
 
     public ResponseEntity<?> error(BadCredentialsException ex) {
         return createBadRequest(ex, "bad_credentials");
+    }
+
+    public ResponseEntity<?> error(InvalidArgumentException ex) {
+        return createBadRequest(ex, "invalid_argument");
     }
 
     public ResponseEntity<?> error(MethodArgumentNotValidException ex) {
