@@ -10,10 +10,8 @@ import com.canx.cebulax.model.Group;
 import com.canx.cebulax.model.Reservation;
 import com.canx.cebulax.model.Resource;
 import com.canx.cebulax.model.User;
-import com.canx.cebulax.repository.GroupRepository;
 import com.canx.cebulax.repository.ReservationRepository;
 import com.canx.cebulax.repository.ResourceRepository;
-import com.canx.cebulax.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,45 +23,44 @@ import java.util.stream.Collectors;
 public class ResourceServiceImpl implements ResourceService {
 
     private final ResourceRepository resourceRepository;
-    private final GroupRepository groupRepository;
+    private final GroupService groupService;
+    private final UserService userService;
     private final ReservationRepository reservationRepository;
-    private final UserRepository userRepository;
 
-    public ResourceServiceImpl(ResourceRepository resourceRepository, GroupRepository groupRepository,
-                               ReservationRepository reservationRepository, UserRepository userRepository) {
+
+    public ResourceServiceImpl(ResourceRepository resourceRepository, GroupService groupService,
+                               ReservationRepository reservationRepository, UserService userService) {
         this.resourceRepository = resourceRepository;
-        this.groupRepository = groupRepository;
+        this.groupService = groupService;
         this.reservationRepository = reservationRepository;
-        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
     @Override
     @Transactional
     public Resource createResource(ResourceCreateDTO dto, Long groupId) {
-        Group group = groupRepository.findById(groupId).orElseThrow(() ->
-                new EntityNotFoundException("Group with id", groupId.toString()));
-
+        Group group = groupService.findById(groupId);
         resourceRepository.findByNameAndGroup(dto.getName(), group).ifPresent(r -> {
             throw new EntityAlreadyExistsException("Resource with name", dto.getName());
         });
-
         Resource resource = new Resource(dto.getName(), dto.getSlots(), group);
-
         return resourceRepository.save(resource);
+    }
+
+    @Override
+    public Resource findById(Long id) {
+        return resourceRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Resource with id", id.toString()));
     }
 
     @Override
     @Transactional
     public void deleteResource(Long resourceId, Long ownerId) {
-        Resource resource = resourceRepository.findById(resourceId).orElseThrow(() ->
-                new EntityNotFoundException("Resource with id", resourceId.toString()));
-
+        Resource resource = findById(resourceId);
         User resourceGroupOwner = resource.getGroup().getOwner();
-
         if (!resourceGroupOwner.getId().equals(ownerId)) {
             throw new InvalidActionException("Delete resource", "can be done only by group owner");
         }
-
         resourceRepository.deleteById(resourceId);
     }
 
@@ -76,12 +73,8 @@ public class ResourceServiceImpl implements ResourceService {
     @Transactional
     public Reservation addReservation(ReservationCreateDTO dto, Long userId) {
         LocalDateTime currentDateTime = LocalDateTime.now();
-
-        Resource resource = resourceRepository.findById(dto.getResourceId()).orElseThrow(() ->
-                new EntityNotFoundException("Resource with id", dto.getResourceId().toString()));
-
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new EntityNotFoundException("User with id", userId.toString()));
+        Resource resource = findById(dto.getResourceId());
+        User user = userService.findById(userId);
 
         if (dto.getDateTo().compareTo(currentDateTime) <= 0) {
             throw new InvalidArgumentException("dateTo", "should be future date");

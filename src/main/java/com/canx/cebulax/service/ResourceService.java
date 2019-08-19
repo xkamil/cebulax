@@ -10,6 +10,8 @@ public interface ResourceService {
 
     Resource createResource(ResourceCreateDTO resourceCreateDto, Long groupId);
 
+    Resource findById(Long id);
+
     void deleteResource(Long resourceId, Long ownerId);
 
     List<Resource> findAll();
