@@ -11,6 +11,8 @@ public interface GroupService {
 
     Group findByName(String groupName);
 
+    Group findById(Long id);
+
     List<Group> findAll();
 
     void joinGroup(Long groupId, String secret, Long userId);
