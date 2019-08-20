@@ -1,16 +1,18 @@
 package com.canx.cebulax.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
+import com.google.common.collect.Sets;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @Table(name = "groups")
 public class Group {
@@ -24,22 +26,18 @@ public class Group {
     @JsonIgnore
     private String secret;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     private User owner;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany
     @JoinTable(
             name = "user_groups",
             joinColumns = @JoinColumn(name = "groups_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id"))
-    private Set<User> users;
+    private Set<User> users  = Sets.newHashSet();;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "resource_group",
-            joinColumns = @JoinColumn(name = "groups_id"),
-            inverseJoinColumns = @JoinColumn(name = "resource_id"))
-    private Set<Resource> resources;
+    @OneToMany(mappedBy = "group")
+    private Set<Resource> resources = Sets.newHashSet();
 
     public Group(String name, String secret, User owner, Set<User> users, Set<Resource> resources) {
         this.name = name;
@@ -47,5 +45,18 @@ public class Group {
         this.owner = owner;
         this.users = users;
         this.resources = resources;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Group group = (Group) o;
+        return Objects.equals(id, group.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
